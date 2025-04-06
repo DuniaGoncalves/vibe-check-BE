@@ -30,6 +30,10 @@ app.post('/moods', (req, res) => {
 });
 
 //Delete Mood
-
+app.delete('/moods/:id', (req, res) => {
+  const { id } = req.params;
+  moods = moods.filter((m) => m.id !== parseInt(id));
+  res.status(204).send();
+});
 
 app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
