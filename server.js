@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const logger = require('./middleware/logger');
 const app = express();
 const PORT = 3001
 
@@ -10,6 +11,8 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 app.use(express.json());
+app.use(logger);
+app.use(unknownEndpoint)
 
 let moods = [];
 
@@ -35,5 +38,9 @@ app.delete('/moods/:id', (req, res) => {
   moods = moods.filter((m) => m.id !== parseInt(id));
   res.status(204).send();
 });
+
+const unknownEndpoint = (request, response) => {
+  response.status(404).send({ error: 'unknown endpoint' })
+}
 
 app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
