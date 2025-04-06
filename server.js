@@ -19,6 +19,15 @@ app.get('/moods', (req, res) => {
 });
 
 // Add Mood
+app.post('/moods', (req, res) => {
+  const { mood, note } = req.body;
+  if (!mood) {
+    return res.status(400).json({ error: 'Mood is required' });
+  }
+  const newMood = { id: Date.now(), mood, note: note || '', date: new Date() };
+  moods.push(newMood);
+  res.status(201).json(newMood);
+});
 
 //Delete Mood
 
