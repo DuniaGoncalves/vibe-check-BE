@@ -9,13 +9,21 @@ const getMoods = (req, res) => {
 
 // Create a mood
 const createMood = (req, res) => {
+  console.log('POST /moods payload:', req.body);
+
   const { mood, note } = req.body;
   if (!mood) return res.status(400).json({ error: 'Mood is required' });
 
   const newMood = new Mood({ mood, note });
   newMood.save()
-    .then((savedMood) => res.status(201).json(savedMood))
-    .catch(() => res.status(500).json({ error: 'Failed to save mood' }));
+  .then(savedMood => {
+    console.log('Mood saved:', savedMood);
+    res.status(201).json(savedMood);
+  })
+  .catch(err => {
+    console.error('Error saving mood to DB:', err.message);
+    res.status(500).json({ error: 'Failed to save mood' });
+  });
 };
 
 // Delete a mood
