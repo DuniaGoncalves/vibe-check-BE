@@ -1,50 +1,22 @@
 const express = require('express');
 const cors = require('cors');
-const logger = require('./middleware/logger');
-// const connectDB = require('./config/db');
+const dotenv = require('dotenv');
+const connectDB = require('./config/db');
+
+dotenv.config();
+connectDB();
 
 const app = express();
-const PORT = 3001
+const PORT = process.env.PORT || 3001;
 
-const corsOptions = {
-  origin: 'http://localhost:5173',
-  optionsSuccessStatus: 200
-}
-
-const unknownEndpoint = (request, response) => {
-  response.status(404).send({ error: 'unknown endpoint' })
-}
-
-app.use(cors(corsOptions));
+app.use(cors({ origin: 'http://localhost:5173' }));
 app.use(express.json());
+
+const logger = require('./middleware/logger');
 app.use(logger);
-app.use(unknownEndpoint)
 
-// connectDB();
+app.use('/moods', require('./routes/moodRoutes'));
 
-let moods = [];
-
-// Get all moods
-app.get('/moods', (req, res) => {
-  res.json(moods);
+app.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
 });
-
-// Add Mood
-app.post('/moods', (req, res) => {
-  const { mood, note } = req.body;
-  if (!mood) {
-    return res.status(400).json({ error: 'Mood is required' });
-  }
-  const newMood = { id: Date.now(), mood, note: note || '', date: new Date() };
-  moods.push(newMood);
-  res.status(201).json(newMood);
-});
-
-//Delete Mood
-app.delete('/moods/:id', (req, res) => {
-  const { id } = req.params;
-  moods = moods.filter((m) => m.id !== parseInt(id));
-  res.status(204).send();
-});
-
-app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
